@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — Tina's Couture{% endblock %}
+{% block content %}
+  <a href="{% url 'shop:product_list' %}" class="inline-flex items-center gap-2 text-sm text-brand-mauve hover:text-brand-mauveDeep">
+    <i class="fa-solid fa-arrow-left"></i> Back to shop
+  </a>
+
+  <section class="grid gap-8 rounded-3xl border border-brand-blush bg-brand-ring/50 p-6 lg:grid-cols-2 lg:p-8">
+    <div class="space-y-4">
+      <div class="overflow-hidden rounded-3xl border border-brand-blush bg-white">
+        {% if product.main_image %}
+          <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="h-96 w-full object-cover" />
+        {% else %}
+          <div class="flex h-96 w-full items-center justify-center text-brand-mauve">
+            <i class="fa-solid {% if product_type == 'apparel' %}fa-shirt{% else %}fa-flask{% endif %} text-5xl"></i>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if product.images.all %}
+        <div>
+          <p class="mb-2 text-xs uppercase tracking-[0.35em] text-brand-mauve">More views</p>
+          <div class="grid grid-cols-3 gap-3">
+            {% for extra in product.images.all %}
+              <div class="overflow-hidden rounded-2xl border border-brand-blush bg-white">
+                <img src="{{ extra.image.url }}" alt="{{ extra.caption|default:product.name }}" class="h-28 w-full object-cover" />
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% else %}
+        <div>
+          <p class="mb-2 text-xs uppercase tracking-[0.35em] text-brand-mauve">More views</p>
+          <div class="grid grid-cols-3 gap-3">
+            {% for i in "123" %}
+              <div class="flex h-28 items-center justify-center rounded-2xl border border-dashed border-brand-blush bg-white text-brand-blush">
+                <i class="fa-solid fa-image"></i>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="space-y-6">
+      <div>
+        <p class="text-xs uppercase tracking-[0.35em] text-brand-mauve">
+          {% if product_type == 'apparel' %}Model #{{ product.id }}{% else %}{{ product.brand|default:"Model" }} #{{ product.id }}{% endif %}
+        </p>
+        <h1 class="mt-2 text-3xl font-semibold text-brand-mauveDeep">{{ product.name }}</h1>
+      </div>
+
+      <p class="text-brand-mauveDeep/80">{{ product.description|default:"A lovely pick from the Tina's Couture collection." }}</p>
+
+      {% if product_type == 'apparel' and product.sizes.all %}
+        <div>
+          <p class="mb-2 text-xs uppercase tracking-[0.35em] text-brand-mauve">Available sizes</p>
+          <div class="flex flex-wrap gap-2">
+            {% for s in product.sizes.all %}
+              <label class="cursor-pointer">
+                <input type="radio" name="size" value="{{ s.code }}" form="add-to-cart-form" class="peer sr-only" {% if forloop.first %}checked{% endif %}>
+                <span class="inline-block rounded-full border border-brand-mauve bg-white px-4 py-1.5 text-sm font-semibold text-brand-mauveDeep peer-checked:bg-brand-coral">{{ s.code }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+      {% elif product_type == 'apparel' %}
+        <p class="text-sm font-semibold text-red-600">No sizes are currently available.</p>
+      {% endif %}
+
+      {% if product_type == 'perfume' and product.volume_ml %}
+        <div class="flex items-center justify-between rounded-2xl border border-brand-blush bg-white px-5 py-4">
+          <span class="text-sm uppercase tracking-[0.2em] text-brand-mauve">Volume</span>
+          <span class="text-sm font-semibold text-brand-mauveDeep">{{ product.volume_ml }}ml</span>
+        </div>
+      {% endif %}
+
+      <div class="flex items-center justify-between rounded-2xl border border-brand-blush bg-white px-5 py-4">
+        <span class="text-sm uppercase tracking-[0.2em] text-brand-mauve">Price</span>
+        <span class="text-2xl font-semibold text-brand-mauveDeep">GHC{{ product.price }}</span>
+      </div>
+
+      <div class="flex items-center justify-between rounded-2xl border border-brand-blush bg-white px-5 py-4">
+        <span class="text-sm uppercase tracking-[0.2em] text-brand-mauve">Availability</span>
+        {% if product.in_stock %}
+          <span class="text-sm font-semibold text-brand-mauveDeep">{{ product.stock }} in stock</span>
+        {% else %}
+          <span class="text-sm font-semibold text-red-600">Out of stock</span>
+        {% endif %}
+      </div>
+
+      {% if product.in_stock %}
+        <form method="post" action="{% url 'shop:cart_add' product_type product.id %}" class="space-y-4" id="add-to-cart-form">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{% url 'shop:cart_detail' %}">
+          <div>
+            <label class="mb-2 block text-xs uppercase tracking-[0.35em] text-brand-mauve">Quantity</label>
+            <div class="inline-flex items-center overflow-hidden rounded-full border border-brand-mauve">
+              <button type="button" id="qty-minus" class="px-4 py-2 text-lg text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream transition">&minus;</button>
+              <input type="number" name="quantity" id="qty-input" value="1" min="1" max="{{ product.stock }}" readonly
+                class="w-16 border-x border-brand-mauve bg-white py-2 text-center text-brand-mauveDeep focus:outline-none" />
+              <button type="button" id="qty-plus" class="px-4 py-2 text-lg text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream transition">+</button>
+            </div>
+          </div>
+          <button type="submit" class="w-full rounded-full border border-brand-mauve bg-brand-mauve px-5 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-brand-cream hover:bg-brand-mauveDark transition">
+            <i class="fa-solid fa-cart-plus mr-2"></i>Add to Cart
+          </button>
+        </form>
+      {% else %}
+        <button disabled class="w-full cursor-not-allowed rounded-full border border-brand-blush bg-brand-ring px-5 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-brand-blush">
+          Out of Stock
+        </button>
+      {% endif %}
+    </div>
+  </section>
+
+  <script>
+    (function () {
+      const input = document.getElementById('qty-input');
+      const minus = document.getElementById('qty-minus');
+      const plus = document.getElementById('qty-plus');
+      if (!input) return;
+      const max = parseInt(input.max || '1', 10);
+
+      minus.addEventListener('click', function () {
+        const val = parseInt(input.value, 10) || 1;
+        input.value = Math.max(1, val - 1);
+      });
+      plus.addEventListener('click', function () {
+        const val = parseInt(input.value, 10) || 1;
+        input.value = Math.min(max, val + 1);
+      });
+    })();
+  </script>
+{% endblock %}

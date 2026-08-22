@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+db.sqlite3
+venv/
+.env
+media/products/apparel/*
+media/products/perfume/*
+!media/products/apparel/.gitkeep
+!media/products/perfume/.gitkeep

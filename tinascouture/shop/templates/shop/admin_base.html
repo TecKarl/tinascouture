@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Admin — Tina's Couture{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { theme: { extend: { colors: { brand: {
+        bg: '#f3e2e2', ring: '#e9d3d5', blush: '#e0b9ba', coral: '#ea9e9e',
+        coralDark: '#d67e7e', mauve: '#a87272', mauveDark: '#8a5b5b',
+        mauveDeep: '#6d4747', cream: '#fdf6f4'
+      } } } } };
+    </script>
+    <style>html { scroll-behavior: smooth; } body { background-color: #f3e2e2; }</style>
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body class="min-h-screen bg-brand-bg text-brand-mauveDeep antialiased">
+    <header class="border-b border-brand-blush bg-brand-cream/90 sticky top-0 z-10">
+      <nav class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-5 lg:px-10">
+        <a href="{% url 'shop:admin_dashboard' %}" class="text-xl font-semibold tracking-[0.3em] text-brand-mauve uppercase">Tina's Couture <span class="ml-2 text-xs tracking-[0.2em] text-brand-mauveDeep">Admin</span></a>
+        <div class="flex items-center gap-4">
+          <a href="{% url 'shop:admin_orders' %}" class="text-sm font-semibold text-brand-mauveDeep/80 hover:text-brand-mauve"><i class="fa-solid fa-receipt mr-2"></i>Orders</a>
+          <form method="post" action="{% url 'shop:logout' %}" class="inline">
+            {% csrf_token %}<button class="inline-flex items-center gap-2 rounded-full border border-brand-mauve px-4 py-2 text-sm font-semibold text-brand-mauveDeep hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</button>
+          </form>
+        </div>
+      </nav>
+    </header>
+    <main class="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-10 lg:px-10 lg:py-14">
+      {% if messages %}<div class="space-y-2">{% for message in messages %}<div class="rounded-2xl border {% if message.tags == 'error' %}border-red-400 bg-red-100 text-red-800{% else %}border-brand-blush bg-brand-ring/70 text-brand-mauveDeep{% endif %} px-5 py-3 text-sm">{{ message }}</div>{% endfor %}</div>{% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+{% extends "shop/admin_base.html" %}
+{% block title %}{{ title }} Tina's Couture{% endblock %}
+{% block content %}
+<section class="mx-auto w-full max-w-3xl space-y-6 rounded-3xl border border-brand-blush bg-brand-cream/70 p-6 lg:p-8">
+  <div class="flex items-center justify-between gap-4"><div><p class="text-xs uppercase tracking-[0.35em] text-brand-mauve">Product management</p><h1 class="mt-2 text-3xl font-semibold text-brand-mauveDeep">{{ title }}</h1></div><a href="{% url 'shop:admin_dashboard' %}" class="text-sm font-semibold text-brand-mauve">Back</a></div>
+  <form method="post" enctype="multipart/form-data" class="space-y-5">
+    {% csrf_token %}
+    {% for field in form %}<div class="space-y-2"><label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-brand-mauveDeep">{{ field.label }}</label>{{ field }}{% if field.help_text %}<p class="text-xs text-brand-mauveDeep/70">{{ field.help_text }}</p>{% endif %}{% for error in field.errors %}<p class="text-sm text-red-600">{{ error }}</p>{% endfor %}</div>{% endfor %}
+    {% if form.non_field_errors %}<div class="text-sm text-red-600">{{ form.non_field_errors }}</div>{% endif %}
+    <button type="submit" class="inline-flex items-center gap-2 rounded-full bg-brand-mauve px-5 py-3 font-semibold text-brand-cream"><i class="fa-solid fa-{% if product %}floppy-disk{% else %}plus{% endif %}"></i> {% if product %}Save changes{% else %}Add product{% endif %}</button>
+  </form>
+</section>
+{% endblock %}

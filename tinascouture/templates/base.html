@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Tina's Couture{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              // Palette sampled from the Tina's Couture flyer:
+              // blush background, coral accent, dusty-rose/mauve for
+              // headings, buttons and the footer.
+              brand: {
+                bg: '#f3e2e2',
+                ring: '#e9d3d5',
+                blush: '#e0b9ba',
+                coral: '#ea9e9e',
+                coralDark: '#d67e7e',
+                mauve: '#a87272',
+                mauveDark: '#8a5b5b',
+                mauveDeep: '#6d4747',
+                cream: '#fdf6f4'
+              }
+            },
+            fontFamily: {
+              sans: ['Segoe UI', 'Helvetica', 'Arial', 'sans-serif']
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      html { scroll-behavior: smooth; }
+      body { background-color: #f3e2e2; }
+    </style>
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body class="min-h-screen bg-brand-bg text-brand-mauveDeep antialiased flex flex-col">
+    <header class="border-b border-brand-blush bg-brand-bg/95 sticky top-0 z-10">
+      <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
+        <a href="{% url 'shop:product_list' %}" class="text-xl font-semibold tracking-[0.3em] text-brand-mauve uppercase">Tina's Couture</a>
+        <div class="flex flex-wrap items-center justify-end gap-4">
+          <a href="{% url 'shop:product_list' %}" class="text-sm uppercase tracking-[0.2em] text-brand-mauveDeep/80 hover:text-brand-mauve">Shop</a>
+          <a href="{% url 'shop:product_list' %}#apparel" class="text-sm uppercase tracking-[0.2em] text-brand-mauveDeep/80 hover:text-brand-mauve">Clothes</a>
+          <a href="{% url 'shop:product_list' %}#perfumes" class="text-sm uppercase tracking-[0.2em] text-brand-mauveDeep/80 hover:text-brand-mauve">Perfumes</a>
+          {% if user.is_authenticated %}
+            {% if user.is_staff %}<a href="{% url 'shop:admin_dashboard' %}" class="text-sm uppercase tracking-[0.2em] text-brand-mauveDeep/80 hover:text-brand-mauve">Manage</a>{% else %}<a href="{% url 'shop:customer_orders' %}" class="text-sm uppercase tracking-[0.2em] text-brand-mauveDeep/80 hover:text-brand-mauve">My orders</a>{% endif %}
+          {% endif %}
+          <a href="{% url 'shop:cart_detail' %}" class="relative inline-flex items-center gap-2 rounded-full border border-brand-mauve bg-brand-mauve px-4 py-2 text-sm font-semibold text-brand-cream hover:bg-brand-mauveDark transition">
+            <i class="fa-solid fa-bag-shopping"></i>
+            Cart
+            {% if cart|length > 0 %}
+              <span class="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-brand-coral text-xs font-bold text-brand-mauveDeep">{{ cart|length }}</span>
+            {% endif %}
+          </a>
+          {% if user.is_authenticated %}
+            <form method="post" action="{% url 'shop:logout' %}" class="inline">
+              {% csrf_token %}
+              <button class="inline-flex items-center gap-2 rounded-full border border-brand-mauve px-4 py-2 text-sm font-semibold text-brand-mauveDeep hover:bg-brand-mauve hover:text-brand-cream transition">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                Sign out
+              </button>
+            </form>
+          {% else %}
+            <a href="{% url 'shop:login' %}" class="inline-flex items-center gap-2 rounded-full border border-brand-mauve px-4 py-2 text-sm font-semibold text-brand-mauveDeep hover:bg-brand-mauve hover:text-brand-cream transition">
+              <i class="fa-solid fa-right-to-bracket"></i>
+              Sign in
+            </a>
+          {% endif %}
+        </div>
+      </nav>
+    </header>
+
+    <main class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-10 px-6 py-10 lg:px-10 lg:py-14">
+      {% if messages %}
+        <div class="space-y-2">
+          {% for message in messages %}
+            <div class="rounded-2xl border {% if message.tags == 'error' %}border-red-400 bg-red-100 text-red-800{% else %}border-brand-blush bg-brand-ring/70 text-brand-mauveDeep{% endif %} px-5 py-3 text-sm">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t border-brand-mauveDeep bg-brand-mauve py-8 text-brand-cream">
+      <div class="mx-auto max-w-7xl px-6 lg:px-10 space-y-4">
+        <p class="text-lg font-semibold tracking-wide">For more enquiries</p>
+        <div class="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm">
+          <a href="https://wa.me/233206761073" class="flex items-center gap-2 hover:text-brand-cream/80"><i class="fa-brands fa-whatsapp"></i> 0206761073</a>
+          <a href="tel:0547691883" class="flex items-center gap-2 hover:text-brand-cream/80"><i class="fa-solid fa-phone"></i> 0547691883</a>
+        </div>
+        <p class="text-xs text-brand-cream/70">&copy; 2026 Tina's Couture. All rights reserved.</p>
+      </div>
+    </footer>
+  </body>
+</html>

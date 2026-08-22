@@ -1,0 +1,25 @@
+{% extends "shop/admin_base.html" %}
+{% block title %}Products Tina's Couture{% endblock %}
+{% block content %}
+<section class="space-y-8">
+  <div><p class="text-xs uppercase tracking-[0.35em] text-brand-mauve">Product management</p><h1 class="mt-2 text-4xl font-semibold text-brand-mauveDeep">Available products</h1><p class="mt-2 text-brand-mauveDeep/70">Select a product to update its information, stock, or visibility.</p></div>
+  <div class="space-y-4">
+    <div class="flex items-center justify-between gap-4"><h2 class="text-2xl font-semibold text-brand-mauveDeep"><i class="fa-solid fa-shirt mr-2 text-brand-mauve"></i> Clothes</h2><a href="{% url 'shop:admin_product_add' 'apparel' %}" class="inline-flex items-center gap-2 rounded-full bg-brand-mauve px-4 py-2 text-sm font-semibold text-brand-cream hover:bg-brand-mauveDark"><i class="fa-solid fa-plus"></i> Add clothes</a></div>
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      {% for product in apparel %}<a href="{% url 'shop:admin_product_edit' 'apparel' product.pk %}" class="group overflow-hidden rounded-2xl border border-brand-blush bg-brand-cream hover:border-brand-mauve">
+        {% if product.main_image %}<img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="h-56 w-full object-cover transition duration-300 group-hover:scale-105" />{% else %}<div class="flex h-56 items-center justify-center bg-brand-ring text-brand-mauve"><i class="fa-solid fa-shirt text-4xl"></i></div>{% endif %}
+        <div class="space-y-2 p-5"><div class="flex justify-between text-xs uppercase tracking-[0.2em] text-brand-mauve"><span>{% if product.is_active %}Visible{% else %}Hidden{% endif %}</span><span>{{ product.stock }} in stock</span></div><p class="text-lg font-semibold">{{ product.name }}</p><p class="text-sm text-brand-mauveDeep/70">GHC{{ product.price }} <span class="float-right font-semibold text-brand-mauve">Edit <i class="fa-solid fa-arrow-right"></i></span></p></div>
+      </a>{% empty %}<p class="text-brand-mauveDeep/70">No clothes have been added yet.</p>{% endfor %}
+    </div>
+  </div>
+  <div class="space-y-4">
+    <div class="flex items-center justify-between gap-4"><h2 class="text-2xl font-semibold text-brand-mauveDeep"><i class="fa-solid fa-flask mr-2 text-brand-mauve"></i> Perfumes</h2><a href="{% url 'shop:admin_product_add' 'perfume' %}" class="inline-flex items-center gap-2 rounded-full bg-brand-mauve px-4 py-2 text-sm font-semibold text-brand-cream hover:bg-brand-mauveDark"><i class="fa-solid fa-plus"></i> Add perfume</a></div>
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      {% for product in perfumes %}<a href="{% url 'shop:admin_product_edit' 'perfume' product.pk %}" class="group overflow-hidden rounded-2xl border border-brand-blush bg-brand-cream hover:border-brand-mauve">
+        {% if product.main_image %}<img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="h-56 w-full object-cover transition duration-300 group-hover:scale-105" />{% else %}<div class="flex h-56 items-center justify-center bg-brand-ring text-brand-mauve"><i class="fa-solid fa-flask text-4xl"></i></div>{% endif %}
+        <div class="space-y-2 p-5"><div class="flex justify-between text-xs uppercase tracking-[0.2em] text-brand-mauve"><span>{% if product.is_active %}Visible{% else %}Hidden{% endif %}</span><span>{{ product.stock }} in stock</span></div><p class="text-lg font-semibold">{{ product.name }}</p><p class="text-sm text-brand-mauveDeep/70">GHC{{ product.price }} <span class="float-right font-semibold text-brand-mauve">Edit <i class="fa-solid fa-arrow-right"></i></span></p></div>
+      </a>{% empty %}<p class="text-brand-mauveDeep/70">No perfumes have been added yet.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

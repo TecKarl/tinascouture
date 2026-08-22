@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Order Placed — Tina's Couture{% endblock %}
+{% block content %}
+  <section class="space-y-6 rounded-3xl border border-brand-blush bg-brand-ring/50 p-6 lg:p-8">
+    <div>
+      <p class="text-xs uppercase tracking-[0.35em] text-brand-mauve">Order confirmed</p>
+      <h1 class="mt-3 text-3xl font-semibold text-brand-mauveDeep">Thanks for your order!</h1>
+      <p class="mt-2 text-brand-mauveDeep/80">Stock has been updated. Reach out to us on WhatsApp or by phone to arrange payment and delivery.</p>
+    </div>
+
+    <div class="space-y-3">
+      {% for item in order_items %}
+        <div class="flex items-center justify-between rounded-2xl border border-brand-blush bg-white px-5 py-3">
+          <div>
+            <p class="font-semibold text-brand-mauveDeep">{{ item.product.name }}</p>
+            <p class="text-xs uppercase tracking-[0.2em] text-brand-mauve">
+              {% if item.product_type == 'apparel' %}Apparel{% else %}Perfume{% endif %}{% if item.size %} &middot; Size {{ item.size }}{% endif %} &middot; Qty {{ item.quantity }}
+            </p>
+          </div>
+          <span class="font-semibold text-brand-mauve">GHC{{ item.total_price }}</span>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="flex items-center justify-between rounded-2xl border border-brand-mauve px-5 py-4">
+      <span class="text-sm uppercase tracking-[0.2em] text-brand-mauve">Order total</span>
+      <span class="text-2xl font-semibold text-brand-mauveDeep">GHC{{ total }}</span>
+    </div>
+
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <a href="https://wa.me/233206761073" class="inline-flex items-center justify-center gap-2 rounded-full border border-brand-mauve bg-brand-mauve px-5 py-3 text-sm font-semibold text-brand-cream hover:bg-brand-mauveDark transition">
+        <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+      </a>
+      <a href="{% url 'shop:product_list' %}" class="inline-flex items-center justify-center rounded-full border border-brand-mauve px-5 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream transition">
+        Continue shopping
+      </a>
+    </div>
+  </section>
+{% endblock %}
