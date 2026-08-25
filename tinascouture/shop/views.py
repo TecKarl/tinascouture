@@ -6,12 +6,17 @@ from django.contrib.auth.password_validation import validate_password
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 from functools import wraps
 
 from .cart import Cart, get_product_model
 from .forms import ApparelCreateForm, ApparelEditForm, PerfumeCreateForm, PerfumeEditForm
 from .models import Apparel, ApparelImage, CustomerProfile, Perfume, PerfumeImage, Purchase, PurchaseItem
 
+
+
+def health_check(request):
+    return JsonResponse({"status": "ok"})
 
 def customer_only(view):
     @wraps(view)

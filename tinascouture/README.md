@@ -43,7 +43,7 @@ source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 python manage.py migrate        # also seeds the S/M/L/XL sizes
-python manage.py createsuperuser   # a starter account is already included below
+python manage.py createsuperuser
 python manage.py runserver
 ```
 
@@ -52,14 +52,11 @@ Then visit:
 - Shop: http://127.0.0.1:8000/
 - Admin: http://127.0.0.1:8000/admin/
 
-### Included starter admin account
+For the Render deployment, including the separate splash Static Site and
+backend Web Service, follow the repository-level `DEPLOYMENT_GUIDE.md`.
 
-- username: `admin`
-- password: `changeme123`
-
-**Change this password immediately** (`python manage.py changepassword admin`)
-before deploying anywhere public — it ships in this zip only so you can log
-in and add your first products right away.
+Create your own administrator with `createsuperuser`. Do not depend on a
+starter account or commit a production password to the project.
 
 ## Adding products
 
@@ -106,11 +103,3 @@ Sampled directly from the flyer:
 | `brand-mauveDark`    | `#8a5b5b` | Hover states                           |
 | `brand-mauveDeep`    | `#6d4747` | Body text                              |
 | `brand-cream`        | `#fdf6f4` | Text on dark/mauve backgrounds         |
-
-## Notes
-
-- This ships with `DEBUG = True` and a development `SECRET_KEY` for easy
-  local testing — generate a fresh secret key and set `DEBUG = False` with
-  a proper `ALLOWED_HOSTS` before deploying.
-- Uses SQLite by default; swap `DATABASES` in `settings.py` for
-  Postgres/MySQL in production.
