@@ -1,17 +1,20 @@
 {% extends "shop/auth_base.html" %}
 {% block title %}Create Account — Tina's Couture{% endblock %}
 {% block content %}
-<section class="mx-auto w-full max-w-md space-y-6 rounded-3xl border border-brand-blush bg-brand-cream/70 p-8">
-  <h1 class="text-3xl font-semibold text-brand-mauveDeep">Create account</h1>
-  <form method="post" class="space-y-4">
-    {% csrf_token %}
-    <input name="first_name" required placeholder="First name" class="w-full rounded-xl border border-brand-blush p-3">
-    <input name="last_name" required placeholder="Last name" class="w-full rounded-xl border border-brand-blush p-3">
-    <input type="email" name="email" required placeholder="Email" class="w-full rounded-xl border border-brand-blush p-3">
-    <input type="tel" name="phone" required placeholder="Phone number" class="w-full rounded-xl border border-brand-blush p-3">
-    <input type="password" name="password" required placeholder="Password" class="w-full rounded-xl border border-brand-blush p-3">
-    <button class="w-full rounded-full bg-brand-mauve px-5 py-3 font-semibold text-brand-cream">Create account</button>
-  </form>
-   <p class="text-sm">Already have an account? <a class="font-semibold text-brand-mauve" href="{% url 'shop:login' %}">Sign in</a></p>
-</section>
+<div class="mx-auto w-full max-w-md">
+  <p class="pb-2 text-center text-xl font-semibold tracking-[0.3em] text-brand-mauve uppercase">Tina's Couture</p>
+  <section class="mx-auto w-full max-w-md space-y-6 rounded-3xl border border-brand-blush bg-brand-cream/70 p-8">
+    <h1 class="text-3xl font-semibold text-brand-mauveDeep">Create account</h1>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      <input name="first_name" required placeholder="First name" class="w-full rounded-xl border border-brand-blush p-3">
+      <input name="last_name" required placeholder="Last name" class="w-full rounded-xl border border-brand-blush p-3">
+      <input type="email" name="email" required placeholder="Email" class="w-full rounded-xl border border-brand-blush p-3">
+      <input type="tel" name="phone" required placeholder="Phone number" class="w-full rounded-xl border border-brand-blush p-3">
+      <input type="password" name="password" required placeholder="Password" class="w-full rounded-xl border border-brand-blush p-3">
+      <button class="w-full rounded-full bg-brand-mauve px-5 py-3 font-semibold text-brand-cream">Create account</button>
+    </form>
+    <p class="text-sm">Already have an account? <a class="font-semibold text-brand-mauve" href="{% url 'shop:login' %}">Sign in</a></p>
+  </section>
+</div>
 {% endblock %}
