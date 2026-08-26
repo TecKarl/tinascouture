@@ -145,7 +145,7 @@
       fetch(APP_ORIGIN + HEALTH_PATH, { cache: "no-store", mode: "cors" })
         .then(function (res) {
           if (res.ok) {
-            setTimeout(goToApp, 300);
+            goToApp();
           } else {
             scheduleNext();
           }

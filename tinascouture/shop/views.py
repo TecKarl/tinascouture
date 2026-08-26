@@ -1,5 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
@@ -10,7 +12,7 @@ from django.http import JsonResponse
 from functools import wraps
 
 from .cart import Cart, get_product_model
-from .forms import ApparelCreateForm, ApparelEditForm, PerfumeCreateForm, PerfumeEditForm
+from .forms import ApparelCreateForm, ApparelEditForm, PerfumeCreateForm, PerfumeEditForm, ProfileForm
 from .models import Apparel, ApparelImage, CustomerProfile, Perfume, PerfumeImage, Purchase, PurchaseItem
 
 
@@ -89,6 +91,82 @@ def signup_view(request):
 def logout_view(request):
     logout(request)
     return redirect("shop:login")
+
+
+@login_required
+def profile_view(request):
+    profile = getattr(request.user, "profile", None)
+    if request.method == "POST":
+        form = ProfileForm(request.user, request.POST)
+        if form.is_valid():
+            request.user.first_name = form.cleaned_data["first_name"].strip()
+            request.user.last_name = form.cleaned_data["last_name"].strip()
+            request.user.email = form.cleaned_data["email"]
+            request.user.save(update_fields=["first_name", "last_name", "email"])
+            if profile is None:
+                profile = CustomerProfile(user=request.user)
+            profile.phone = form.cleaned_data["phone"]
+            profile.address = form.cleaned_data["address"]
+            profile.save()
+            messages.success(request, "Your profile has been updated.")
+            return redirect("shop:product_list")
+    else:
+        form = ProfileForm(request.user)
+    return render(request, "shop/profile.html", {"form": form})
+
+
+@login_required
+def password_change_view(request):
+    if request.method == "POST":
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Your password has been changed.")
+            return redirect("shop:profile")
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, "shop/password_change.html", {"form": form})
+
+
+def _is_staff(user):
+    return user.is_active and user.is_staff
+
+
+@user_passes_test(_is_staff, login_url="shop:login")
+def admin_profile_view(request):
+    profile = getattr(request.user, "profile", None)
+    if request.method == "POST":
+        form = ProfileForm(request.user, request.POST)
+        if form.is_valid():
+            request.user.first_name = form.cleaned_data["first_name"].strip()
+            request.user.last_name = form.cleaned_data["last_name"].strip()
+            request.user.email = form.cleaned_data["email"]
+            request.user.save(update_fields=["first_name", "last_name", "email"])
+            if profile is None:
+                profile = CustomerProfile(user=request.user)
+            profile.phone = form.cleaned_data["phone"]
+            profile.address = form.cleaned_data["address"]
+            profile.save()
+            messages.success(request, "Your profile has been updated.")
+            return redirect("shop:admin_dashboard")
+    else:
+        form = ProfileForm(request.user)
+    return render(request, "shop/admin_profile.html", {"form": form})
+
+
+@user_passes_test(_is_staff, login_url="shop:login")
+def admin_password_change_view(request):
+    if request.method == "POST":
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Your password has been changed.")
+            return redirect("shop:admin_profile")
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, "shop/admin_password_change.html", {"form": form})
 
 
 @customer_only

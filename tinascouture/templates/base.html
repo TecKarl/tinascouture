@@ -50,6 +50,7 @@
           {% if user.is_authenticated %}
             {% if user.is_staff %}<a href="{% url 'shop:admin_dashboard' %}" class="text-sm uppercase tracking-[0.2em] text-brand-mauveDeep/80 hover:text-brand-mauve">Manage</a>{% else %}<a href="{% url 'shop:customer_orders' %}" class="text-sm uppercase tracking-[0.2em] text-brand-mauveDeep/80 hover:text-brand-mauve">My orders</a>{% endif %}
           {% endif %}
+          <a href="{% url 'shop:profile' %}" aria-label="Profile" title="Profile" class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream transition"><i class="fa-solid fa-user"></i></a>
           <a href="{% url 'shop:cart_detail' %}" class="relative inline-flex items-center gap-2 rounded-full border border-brand-mauve bg-brand-mauve px-4 py-2 text-sm font-semibold text-brand-cream hover:bg-brand-mauveDark transition">
             <i class="fa-solid fa-bag-shopping"></i>
             Cart
@@ -79,6 +80,7 @@
           {% if user.is_authenticated %}
             {% if user.is_staff %}<a href="{% url 'shop:admin_dashboard' %}" aria-label="Manage products" title="Manage products" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-gear"></i></a>{% else %}<a href="{% url 'shop:customer_orders' %}" aria-label="My orders" title="My orders" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-receipt"></i></a>{% endif %}
           {% endif %}
+          <a href="{% url 'shop:profile' %}" aria-label="Profile" title="Profile" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-user"></i></a>
           <a href="{% url 'shop:cart_detail' %}" aria-label="Cart" title="Cart" class="relative inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-mauve text-brand-cream hover:bg-brand-mauveDark"><i class="fa-solid fa-bag-shopping"></i>{% if cart|length > 0 %}<span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-coral text-[10px] font-bold text-brand-mauveDeep">{{ cart|length }}</span>{% endif %}</a>
           {% if user.is_authenticated %}
             <form method="post" action="{% url 'shop:logout' %}" class="inline">{% csrf_token %}<button type="submit" aria-label="Sign out" title="Sign out" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-arrow-right-from-bracket"></i></button></form>
