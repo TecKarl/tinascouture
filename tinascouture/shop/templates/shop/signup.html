@@ -11,10 +11,29 @@
       <input name="last_name" required placeholder="Last name" class="w-full rounded-xl border border-brand-blush p-3">
       <input type="email" name="email" required placeholder="Email" class="w-full rounded-xl border border-brand-blush p-3">
       <input type="tel" name="phone" required placeholder="Phone number" class="w-full rounded-xl border border-brand-blush p-3">
-      <input type="password" name="password" required placeholder="Password" class="w-full rounded-xl border border-brand-blush p-3">
+      <div class="relative">
+        <input type="password" name="password" id="signup-password" required placeholder="Password" class="w-full rounded-xl border border-brand-blush p-3 pr-12">
+        <button type="button" data-password-toggle="signup-password" aria-label="Show password" title="Show password" class="absolute inset-y-0 right-0 z-10 inline-flex w-12 items-center justify-center text-brand-mauveDeep hover:text-brand-mauveDark">
+          <i class="fa-solid fa-eye-slash text-base" aria-hidden="true"></i>
+        </button>
+      </div>
       <button class="w-full rounded-full bg-brand-mauve px-5 py-3 font-semibold text-brand-cream">Create account</button>
     </form>
     <p class="text-sm">Already have an account? <a class="font-semibold text-brand-mauve" href="{% url 'shop:login' %}">Sign in</a></p>
   </section>
 </div>
+<script>
+  document.querySelectorAll("[data-password-toggle]").forEach(function (toggle) {
+    toggle.addEventListener("click", function () {
+      var password = document.getElementById(toggle.dataset.passwordToggle);
+      var icon = toggle.querySelector("i");
+      var isHidden = password.type === "password";
+      password.type = isHidden ? "text" : "password";
+      icon.classList.toggle("fa-eye", isHidden);
+      icon.classList.toggle("fa-eye-slash", !isHidden);
+      toggle.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
+      toggle.setAttribute("title", isHidden ? "Hide password" : "Show password");
+    });
+  });
+</script>
 {% endblock %}
