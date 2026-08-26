@@ -252,11 +252,20 @@ def customer_orders(request):
 
 
 @require_POST
+@transaction.atomic
 @customer_only
 @login_required
 def customer_cancel_order(request, pk):
-    purchase = get_object_or_404(Purchase, pk=pk, user=request.user)
+    purchase = get_object_or_404(
+        Purchase.objects.select_for_update(), pk=pk, user=request.user
+    )
     if purchase.status in {"pending", "confirmed"}:
+        for item in purchase.items.all():
+            product = get_product_model(item.product_type).objects.select_for_update().get(
+                pk=item.product_id
+            )
+            product.stock += item.quantity
+            product.save(update_fields=["stock"])
         purchase.status = "cancelled"
         purchase.save(update_fields=["status"])
         messages.success(request, f"Order #{purchase.pk} was cancelled.")

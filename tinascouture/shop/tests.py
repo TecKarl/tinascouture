@@ -67,6 +67,10 @@ class OrderStatusFlowTests(TestCase):
 		self.admin = User.objects.create_user(
 			username="orders-admin", password="strong-admin-password", is_staff=True
 		)
+		self.apparel = Apparel.objects.create(
+			name="Order apparel", price="100.00", stock=4,
+			main_image=SimpleUploadedFile("order-item.jpg", b"image-data", content_type="image/jpeg"),
+		)
 		self.purchase = Purchase.objects.create(
 			user=self.customer,
 			customer_name="Customer",
@@ -76,7 +80,7 @@ class OrderStatusFlowTests(TestCase):
 		PurchaseItem.objects.create(
 			purchase=self.purchase,
 			product_type="apparel",
-			product_id=1,
+			product_id=self.apparel.pk,
 			product_name="Test apparel",
 			unit_price="100.00",
 			quantity=1,
@@ -99,6 +103,17 @@ class OrderStatusFlowTests(TestCase):
 		self.assertRedirects(response, "/orders/")
 		self.purchase.refresh_from_db()
 		self.assertEqual(self.purchase.status, "cancelled")
+
+	def test_cancelling_order_restores_stock_only_once(self):
+		self.client.force_login(self.customer)
+
+		self.client.post(f"/orders/{self.purchase.pk}/cancel/")
+		self.apparel.refresh_from_db()
+		self.assertEqual(self.apparel.stock, 5)
+
+		self.client.post(f"/orders/{self.purchase.pk}/cancel/")
+		self.apparel.refresh_from_db()
+		self.assertEqual(self.apparel.stock, 5)
 
 	def test_customer_cannot_cancel_another_customers_order(self):
 		self.client.force_login(self.other_customer)

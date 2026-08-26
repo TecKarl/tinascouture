@@ -1,5 +1,14 @@
 {% extends "shop/admin_base.html" %}
 {% block title %}Orders Tina's Couture{% endblock %}
+{% block extra_head %}
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			window.setInterval(function () {
+				if (!document.hidden) window.location.reload();
+			}, 30000);
+		});
+	</script>
+{% endblock %}
 {% block content %}
 <section class="space-y-6 rounded-3xl border border-brand-blush bg-brand-cream/70 p-8"><h1 class="text-3xl font-semibold text-brand-mauveDeep">Orders</h1>{% for purchase in purchases %}<article class="space-y-4 rounded-2xl border border-brand-blush bg-white p-5"><div class="flex flex-wrap justify-between gap-3"><strong>#{{ purchase.id }} · {{ purchase.customer_name }}</strong><span>GHC{{ purchase.total }}</span></div><p class="text-sm">{{ purchase.customer_email }}{% if purchase.customer_phone %} · {{ purchase.customer_phone }}{% endif %}</p><div class="flex flex-wrap items-center justify-between gap-4 border-t border-brand-ring pt-4"><span class="font-semibold text-brand-mauve">Current status: {{ purchase.get_status_display }}</span>{% if purchase.status != "cancelled" %}<form method="post" action="{% url 'shop:admin_update_order_status' purchase.pk %}" class="flex items-center gap-2">{% csrf_token %}<label for="status-{{ purchase.pk }}" class="text-sm">Change status</label><select id="status-{{ purchase.pk }}" name="status" class="rounded-xl border border-brand-blush bg-brand-cream px-3 py-2 text-sm"><option value="pending"{% if purchase.status == "pending" %} selected{% endif %}>Pending</option><option value="confirmed"{% if purchase.status == "confirmed" %} selected{% endif %}>Confirmed</option><option value="completed"{% if purchase.status == "completed" %} selected{% endif %}>Completed</option></select><button class="rounded-full bg-brand-mauve px-4 py-2 text-sm font-semibold text-brand-cream" type="submit">Update</button></form>{% endif %}</div>{% for item in purchase.items.all %}<p class="text-sm">{{ item.product_name }}{% if item.size %} ({{ item.size }}){% endif %} · {{ item.quantity }} × GHC{{ item.unit_price }}</p>{% endfor %}</article>{% empty %}<p>No purchases yet.</p>{% endfor %}</section>
 {% endblock %}

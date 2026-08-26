@@ -1,5 +1,14 @@
 {% extends "base.html" %}
 {% block title %}My Orders — Tina's Couture{% endblock %}
+{% block extra_head %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      window.setInterval(function () {
+        if (!document.hidden) window.location.reload();
+      }, 30000);
+    });
+  </script>
+{% endblock %}
 {% block content %}
 <section class="space-y-6 rounded-3xl border border-brand-blush bg-brand-cream/70 p-6 lg:p-8">
   <div>

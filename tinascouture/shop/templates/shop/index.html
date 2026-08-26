@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Tina's Couture Shop{% endblock %}
 {% block extra_head %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      window.setInterval(function () {
+        if (!document.hidden) window.location.reload();
+      }, 30000);
+    });
+  </script>
   <style>
     @media (max-width: 639px) {
       .mobile-product-rail {
