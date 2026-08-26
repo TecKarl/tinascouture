@@ -40,23 +40,29 @@
     padding: 48px 32px;
   }
   .brand {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: var(--brand-mauve);
-    margin-bottom: 28px;
-  }
-  .spinner {
-    width: 56px;
-    height: 56px;
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    width: 14ch;
     margin: 0 auto 24px;
-    border-radius: 50%;
-    border: 4px solid var(--brand-ring);
-    border-top-color: var(--brand-mauve);
-    animation: spin 0.9s linear infinite;
+    white-space: nowrap;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .brand-text {
+    display: inline-block;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--brand-mauve);
+    white-space: nowrap;
+    animation: carousel 3.2s ease-in-out infinite;
+  }
+  @keyframes carousel {
+    0% { transform: translateX(100%); }
+    15% { transform: translateX(100%); }
+    85% { transform: translateX(-100%); }
+    100% { transform: translateX(-100%); }
+  }
+  .brand.stopped .brand-text { animation-play-state: paused; }
   h1 {
     font-size: 20px;
     font-weight: 600;
@@ -69,24 +75,6 @@
     opacity: 0.75;
     margin: 0;
     line-height: 1.5;
-  }
-  .bar-track {
-    margin-top: 28px;
-    height: 6px;
-    border-radius: 999px;
-    background: var(--brand-ring);
-    overflow: hidden;
-  }
-  .bar-fill {
-    height: 100%;
-    width: 18%;
-    border-radius: 999px;
-    background: var(--brand-coral);
-    animation: slide 1.6s ease-in-out infinite;
-  }
-  @keyframes slide {
-    0% { margin-left: -18%; }
-    100% { margin-left: 100%; }
   }
   .fallback {
     display: none;
@@ -110,14 +98,10 @@
 </head>
 <body>
   <div class="card">
-    <div class="brand">Tina's Couture</div>
-    <div class="spinner" aria-hidden="true"></div>
-    <h1 id="statusTitle">Getting the shop ready</h1>
-    <p id="statusText">Just a moment while we open up.</p>
-    <div class="bar-track"><div class="bar-fill"></div></div>
+    <div class="brand" aria-label="tina's couture"><span class="brand-text">TINA'S COUTURE</span></div>
     <div class="fallback" id="fallback">
       <a href="#" id="fallbackLink">Continue to the shop</a>
-      <p>Taking longer than usual — you can also just tap through.</p>
+      <p>Taking longer than usual? Tap this.</p>
     </div>
   </div>
 
@@ -127,14 +111,14 @@
     // check path added to shop/urls.py.
     var APP_ORIGIN = "https://tinascouture.onrender.com";
     var HEALTH_PATH = "/health/";
-    var POLL_INTERVAL_MS = 2500;
+    var POLL_INTERVAL_MS = 250;
+    var AUTO_REDIRECT_AFTER_MS = 4500;
     var FALLBACK_AFTER_MS = 45000; // show manual "continue anyway" link
     // --------------------------------------------------------------------
 
-    var statusTitle = document.getElementById("statusTitle");
-    var statusText = document.getElementById("statusText");
     var fallback = document.getElementById("fallback");
     var fallbackLink = document.getElementById("fallbackLink");
+    var brand = document.querySelector(".brand");
 
     // If the visitor already has a return path (e.g. they were on a
     // product page when the app went to sleep), forward them back to it.
@@ -146,18 +130,21 @@
 
     var attempts = 0;
     var started = Date.now();
+    var redirectStarted = false;
 
     function goToApp() {
+      if (redirectStarted) return;
+      redirectStarted = true;
       window.location.replace(destination);
     }
+
+    setTimeout(goToApp, AUTO_REDIRECT_AFTER_MS);
 
     function poll() {
       attempts += 1;
       fetch(APP_ORIGIN + HEALTH_PATH, { cache: "no-store", mode: "cors" })
         .then(function (res) {
           if (res.ok) {
-            statusTitle.textContent = "Ready!";
-            statusText.textContent = "Taking you in now.";
             setTimeout(goToApp, 300);
           } else {
             scheduleNext();
@@ -171,7 +158,7 @@
     function scheduleNext() {
       if (Date.now() - started > FALLBACK_AFTER_MS) {
         fallback.style.display = "block";
-        statusText.textContent = "The shop is opening up.";
+        brand.classList.add("stopped");
       }
       setTimeout(poll, POLL_INTERVAL_MS);
     }

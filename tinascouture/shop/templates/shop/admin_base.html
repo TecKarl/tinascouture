@@ -19,11 +19,17 @@
   <body class="min-h-screen bg-brand-bg text-brand-mauveDeep antialiased">
     <header class="border-b border-brand-blush bg-brand-cream/90 top-0 z-10">
       <nav class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-5 lg:px-10">
-        <a href="{% url 'shop:admin_dashboard' %}" class="text-xl font-semibold tracking-[0.3em] text-brand-mauve uppercase">Tina's Couture <span class="ml-2 text-xs tracking-[0.2em] text-brand-mauveDeep">Admin</span></a>
-        <div class="flex items-center gap-4">
+        <a href="{% url 'shop:admin_dashboard' %}" class="text-sm font-semibold tracking-[0.1em] text-brand-mauve uppercase sm:text-xl sm:tracking-[0.3em]">Tina's Couture <span class="ml-1 text-[10px] tracking-[0.1em] text-brand-mauveDeep sm:ml-2 sm:text-xs sm:tracking-[0.2em]">Admin</span></a>
+        <div class="hidden items-center gap-4 sm:flex">
           <a href="{% url 'shop:admin_orders' %}" class="text-sm font-semibold text-brand-mauveDeep/80 hover:text-brand-mauve"><i class="fa-solid fa-receipt mr-2"></i>Orders</a>
           <form method="post" action="{% url 'shop:logout' %}" class="inline">
             {% csrf_token %}<button class="inline-flex items-center gap-2 rounded-full border border-brand-mauve px-4 py-2 text-sm font-semibold text-brand-mauveDeep hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</button>
+          </form>
+        </div>
+        <div class="flex items-center gap-1 sm:hidden">
+          <a href="{% url 'shop:admin_orders' %}" aria-label="Orders" title="Orders" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-receipt"></i></a>
+          <form method="post" action="{% url 'shop:logout' %}" class="inline">
+            {% csrf_token %}<button type="submit" aria-label="Sign out" title="Sign out" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
           </form>
         </div>
       </nav>

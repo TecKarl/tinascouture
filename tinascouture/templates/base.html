@@ -42,8 +42,8 @@
   <body class="min-h-screen bg-brand-bg text-brand-mauveDeep antialiased flex flex-col">
     <header class="border-b border-brand-blush bg-brand-bg/95 sticky top-0 z-10">
       <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
-        <a href="{% url 'shop:product_list' %}" class="text-xl font-semibold tracking-[0.3em] text-brand-mauve uppercase">Tina's Couture</a>
-        <div class="flex flex-wrap items-center justify-end gap-4">
+        <a href="{% url 'shop:product_list' %}" class="text-sm font-semibold tracking-[0.1em] text-brand-mauve uppercase sm:text-xl sm:tracking-[0.3em]">Tina's Couture</a>
+        <div class="hidden flex-wrap items-center justify-end gap-4 sm:flex">
           <a href="{% url 'shop:product_list' %}" class="text-sm uppercase tracking-[0.2em] text-brand-mauveDeep/80 hover:text-brand-mauve">Shop</a>
           <a href="{% url 'shop:product_list' %}#apparel" class="text-sm uppercase tracking-[0.2em] text-brand-mauveDeep/80 hover:text-brand-mauve">Clothes</a>
           <a href="{% url 'shop:product_list' %}#perfumes" class="text-sm uppercase tracking-[0.2em] text-brand-mauveDeep/80 hover:text-brand-mauve">Perfumes</a>
@@ -70,6 +70,20 @@
               <i class="fa-solid fa-right-to-bracket"></i>
               Sign in
             </a>
+          {% endif %}
+        </div>
+        <div class="flex items-center gap-1 sm:hidden">
+          <a href="{% url 'shop:product_list' %}" aria-label="Shop" title="Shop" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-store"></i></a>
+          <a href="{% url 'shop:product_list' %}#apparel" aria-label="Clothes" title="Clothes" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-shirt"></i></a>
+          <a href="{% url 'shop:product_list' %}#perfumes" aria-label="Perfumes" title="Perfumes" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-flask"></i></a>
+          {% if user.is_authenticated %}
+            {% if user.is_staff %}<a href="{% url 'shop:admin_dashboard' %}" aria-label="Manage products" title="Manage products" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-gear"></i></a>{% else %}<a href="{% url 'shop:customer_orders' %}" aria-label="My orders" title="My orders" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-receipt"></i></a>{% endif %}
+          {% endif %}
+          <a href="{% url 'shop:cart_detail' %}" aria-label="Cart" title="Cart" class="relative inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-mauve text-brand-cream hover:bg-brand-mauveDark"><i class="fa-solid fa-bag-shopping"></i>{% if cart|length > 0 %}<span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-coral text-[10px] font-bold text-brand-mauveDeep">{{ cart|length }}</span>{% endif %}</a>
+          {% if user.is_authenticated %}
+            <form method="post" action="{% url 'shop:logout' %}" class="inline">{% csrf_token %}<button type="submit" aria-label="Sign out" title="Sign out" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-arrow-right-from-bracket"></i></button></form>
+          {% else %}
+            <a href="{% url 'shop:login' %}" aria-label="Sign in" title="Sign in" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-mauve text-brand-mauve hover:bg-brand-mauve hover:text-brand-cream"><i class="fa-solid fa-right-to-bracket"></i></a>
           {% endif %}
         </div>
       </nav>
