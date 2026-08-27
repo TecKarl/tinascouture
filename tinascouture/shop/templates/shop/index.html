@@ -25,6 +25,7 @@
       .mobile-product-card .mobile-product-placeholder {
         height: 9rem;
       }
+      .mobile-product-card.is-mobile-hidden { display: none; }
       .mobile-product-card .space-y-3 { gap: 0.5rem; }
       .mobile-product-card .p-5 { padding: 0.75rem; }
       .mobile-product-card .text-lg { font-size: 0.875rem; line-height: 1.25rem; }
@@ -43,7 +44,15 @@
         min-width: 0;
         width: auto;
       }
-      .mobile-product-rail.is-expanded .mobile-show-more { display: none; }
+      .mobile-product-rail.is-expanded .mobile-product-card.is-mobile-hidden { display: none; }
+      .mobile-product-rail.is-expanded .mobile-show-more { display: flex; }
+      .mobile-product-rail.is-expanded .mobile-show-more.is-all { display: none; }
+      .mobile-product-controls {
+        display: flex;
+        flex: 0 0 auto;
+        gap: 0.5rem;
+        align-items: center;
+      }
       .mobile-show-more {
         display: flex;
         flex: 0 0 108px;
@@ -58,16 +67,42 @@
         text-transform: uppercase;
         letter-spacing: 0.08em;
       }
+      .mobile-show-less { display: none; }
+      .mobile-product-rail.has-been-expanded .mobile-show-less { display: flex; }
     }
     @media (min-width: 640px) {
-      .mobile-show-more { display: none; }
+      .mobile-product-controls { display: none; }
     }
   </style>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      document.querySelectorAll("[data-show-more]").forEach(function (button) {
-        button.addEventListener("click", function () {
-          button.closest("[data-product-rail]").classList.add("is-expanded");
+      document.querySelectorAll("[data-product-rail]").forEach(function (rail) {
+        var products = Array.from(rail.querySelectorAll(".mobile-product-card"));
+        var showMore = rail.querySelector("[data-show-more]");
+        var showLess = rail.querySelector("[data-show-less]");
+        var visibleCount = 3;
+
+        function showProducts(count) {
+          products.forEach(function (product, index) {
+            product.classList.toggle("is-mobile-hidden", index >= count);
+          });
+          showMore.textContent = count > 3 ? "Show all" : "Show more";
+          showMore.classList.toggle("is-all", count >= products.length);
+          rail.classList.toggle("is-expanded", count > 3);
+        }
+
+        showProducts(visibleCount);
+        showMore.addEventListener("click", function () {
+          rail.classList.add("has-been-expanded");
+          visibleCount = visibleCount === 3
+            ? Math.min(visibleCount + 3, products.length)
+            : products.length;
+          showProducts(visibleCount);
+        });
+        showLess.addEventListener("click", function () {
+          visibleCount = 3;
+          showProducts(visibleCount);
+          rail.classList.remove("has-been-expanded");
         });
       });
     });
@@ -109,7 +144,7 @@
             </div>
           </a>
         {% endfor %}
-        <button type="button" class="mobile-show-more" data-show-more>Show more</button>
+        <div class="mobile-product-controls"><button type="button" class="mobile-show-more" data-show-more>Show more</button><button type="button" class="mobile-show-more mobile-show-less" data-show-less>Show less</button></div>
       </div>
     {% else %}
       <p class="text-brand-mauveDeep/70">No apparel yet, check back soon.</p>
@@ -150,7 +185,7 @@
             </div>
           </a>
         {% endfor %}
-        <button type="button" class="mobile-show-more" data-show-more>Show more</button>
+        <div class="mobile-product-controls"><button type="button" class="mobile-show-more" data-show-more>Show more</button><button type="button" class="mobile-show-more mobile-show-less" data-show-less>Show less</button></div>
       </div>
     {% else %}
       <p class="text-brand-mauveDeep/70">No perfumes yet, check back soon.</p>
