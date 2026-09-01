@@ -76,94 +76,86 @@
     margin: 0;
     line-height: 1.5;
   }
-  .fallback {
+  .loading {
     display: none;
     margin-top: 22px;
   }
-  .fallback a {
-    display: inline-block;
-    padding: 11px 22px;
-    border-radius: 999px;
-    background: var(--brand-mauve);
-    color: var(--brand-cream);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    text-decoration: none;
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--brand-blush);
+    border-top-color: var(--brand-mauve);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
   }
-  .fallback a:hover { background: var(--brand-mauveDark); }
-  .fallback p { margin-top: 12px; font-size: 12px; }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .loading p {
+    font-size: 12px;
+  }
 </style>
 </head>
 <body>
   <div class="card">
     <div class="brand" aria-label="tina's couture"><span class="brand-text">TINA'S COUTURE</span></div>
-    <div class="fallback" id="fallback">
-      <a href="#" id="fallbackLink">Continue to the shop</a>
-      <p>Taking longer than usual? Tap this.</p>
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Loading your experience...</p>
     </div>
   </div>
 
   <script>
-    // ---- Configuration -----------------------------------------------
-    // The Django backend's own origin (its subdomain), and the health
-    // check path added to shop/urls.py.
     var APP_ORIGIN = "https://tinascouture.onrender.com";
-    var HEALTH_PATH = "/health/";
-    var POLL_INTERVAL_MS = 250;
-    var AUTO_REDIRECT_AFTER_MS = 45000;
-    var FALLBACK_AFTER_MS = 46000; // show manual "continue anyway" link
-    // --------------------------------------------------------------------
+    var LOADING_DISPLAY_MS = 50000; // 50 seconds
+    var WARM_UP_PATH = "/";
 
-    var fallback = document.getElementById("fallback");
-    var fallbackLink = document.getElementById("fallbackLink");
+    var loading = document.getElementById("loading");
     var brand = document.querySelector(".brand");
 
-    // If the visitor already has a return path (e.g. they were on a
-    // product page when the app went to sleep), forward them back to it.
+    // Determine destination
     var params = new URLSearchParams(window.location.search);
     var returnTo = params.get("to");
     var isLocalPath = returnTo && returnTo.charAt(0) === "/" && returnTo.charAt(1) !== "/";
     var destination = isLocalPath ? APP_ORIGIN + returnTo : APP_ORIGIN + "/";
-    fallbackLink.href = destination;
 
-    var attempts = 0;
-    var started = Date.now();
-    var redirectStarted = false;
+    var warmUpStarted = false;
+    var loadingStarted = false;
 
-    function goToApp() {
-      if (redirectStarted) return;
-      redirectStarted = true;
+    function startWarmUp() {
+      if (warmUpStarted) return;
+      warmUpStarted = true;
+      
+      // Silently ping the server to wake it up
+      fetch(APP_ORIGIN + WARM_UP_PATH, { 
+        cache: "no-store", 
+        mode: "cors",
+        signal: AbortSignal.timeout(5000)
+      }).catch(function () {
+        // Silently fail - we'll redirect anyway after the loading period
+      });
+    }
+
+    function startLoading() {
+      if (loadingStarted) return;
+      loadingStarted = true;
+      loading.style.display = "block";
+      brand.classList.add("stopped");
+    }
+
+    function redirectToApp() {
       window.location.replace(destination);
     }
 
-    setTimeout(goToApp, AUTO_REDIRECT_AFTER_MS);
+    // Warm up the server immediately (silently)
+    startWarmUp();
 
-    function poll() {
-      attempts += 1;
-      fetch(APP_ORIGIN + HEALTH_PATH, { cache: "no-store", mode: "cors" })
-        .then(function (res) {
-          if (res.ok) {
-            goToApp();
-          } else {
-            scheduleNext();
-          }
-        })
-        .catch(function () {
-          scheduleNext();
-        });
-    }
+    // Show loading screen after a short delay
+    setTimeout(startLoading, 500);
 
-    function scheduleNext() {
-      if (Date.now() - started > FALLBACK_AFTER_MS) {
-        fallback.style.display = "block";
-        brand.classList.add("stopped");
-      }
-      setTimeout(poll, POLL_INTERVAL_MS);
-    }
-
-    poll();
+    // Redirect after 50 seconds
+    setTimeout(redirectToApp, LOADING_DISPLAY_MS);
   </script>
 </body>
 </html>
